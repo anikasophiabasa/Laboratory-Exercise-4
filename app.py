@@ -27,7 +27,7 @@ PROFILE = {
     "about": (
         "I'm a 2nd year Computer Engineering student at the Polytechnic University of the Philippines. "
         "I love turning tricky problems into clean, working solutions, whether that's a Python program, "
-        "a web page, or a data structure. Outside of code, I'm usually singing, dancing, playing an "
+        "a web page, or a data structure. Outside of code, I'm usually singing, playing an "
         "instrument, or gaming. I believe creativity and logic work best together."
     ),
     # --- player card (home page) ---
