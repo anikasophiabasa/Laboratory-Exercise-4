@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Area of a Circle{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Math</span>
+    <h1>Area of a <span class="hl">Circle</span></h1><p>A = π × r²</p></div>
+<div class="tool">
+    <a class="back" href="{{ url_for('index') }}#works">← All works</a>
+    <div class="card">
+        <div class="shape"><svg viewBox="0 0 150 120"><circle cx="75" cy="60" r="52" fill="rgba(124,92,255,.2)" stroke="#7c5cff" stroke-width="3"/>
+            <line x1="75" y1="60" x2="127" y2="60" stroke="#19d3da" stroke-width="3" stroke-dasharray="5 4"/><circle cx="75" cy="60" r="4" fill="#ff5ea8"/>
+            <text x="97" y="52" fill="#19d3da" font-size="14" font-weight="700">r</text></svg></div>
+        {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+        <form action="{{ url_for('acircle') }}" method="post">
+            <div class="field"><label for="radius">Enter a radius</label>
+                <input type="number" step="any" min="0" id="radius" name="radius" value="{{ radius }}" placeholder="e.g. 5" required autofocus></div>
+            <button class="btn" type="submit">Compute ◯</button>
+        </form>
+        {% if data %}
+        <div class="result-box"><span class="label">Area of the circle</span><div class="big">{{ '%.4f'|format(data.area) }}</div>
+            <div class="metrics">
+                <div class="metric"><small>Diameter</small><b>{{ '%.4f'|format(data.diameter) }}</b></div>
+                <div class="metric"><small>Circumference</small><b>{{ '%.4f'|format(data.circumference) }}</b></div>
+            </div></div>
+        {% endif %}
+    </div>
+    {% include "_worknav.html" %}
+</div>
+{% endblock %}

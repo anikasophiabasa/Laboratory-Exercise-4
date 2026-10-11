@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Infix to Postfix{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Data Structures</span>
+    <h1>Infix to <span class="hl">Postfix</span></h1>
+    <p>Type an expression and watch a stack of linked-list nodes turn it into postfix.</p></div>
+
+<div class="tool">
+    <a class="back" href="{{ url_for('index') }}#works">← All works</a>
+
+    <div class="card">
+        <form action="{{ url_for('infixtopostfix') }}" method="post">
+            <div class="field"><label for="infix">Infix expression</label>
+                <input type="text" id="infix" name="infix" value="{{ expression }}" placeholder="A+B*C" autocomplete="off" autofocus></div>
+            <div class="btn-row">
+                <button class="btn" type="submit">Convert ✨</button>
+                <button class="btn ghost" type="button" onclick="document.getElementById('infix').value='A+B*C'">A+B*C</button>
+                <button class="btn ghost" type="button" onclick="document.getElementById('infix').value='(A+B)*C'">(A+B)*C</button>
+                <button class="btn ghost" type="button" onclick="document.getElementById('infix').value='A+B*(C^D-E)'">A+B*(C^D-E)</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div class="alert error" style="margin-top:20px; margin-bottom:0">{{ error }}</div>
+        {% endif %}
+
+        {% if postfix is not none %}
+        <div class="result-box">
+            <span class="label">Postfix expression</span>
+            <div class="big">{{ postfix }}</div>
+            <div class="metrics">
+                <div class="metric"><small>Infix (what you typed)</small><b>{{ expression }}</b></div>
+                <div class="metric"><small>Steps</small><b>{{ steps|length }}</b></div>
+                {% if value is not none %}<div class="metric value"><small>Value</small><b>{{ value }}</b></div>{% endif %}
+            </div>
+            {% if value_note %}<p class="note">{{ value_note }}</p>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if steps %}
+    <div class="card" style="margin-top:22px">
+        <h3 style="margin-bottom:6px">Step by step</h3>
+        <p style="color:var(--muted); font-size:.9rem; margin-bottom:16px">
+            The stack is shown from <b>top</b> to bottom, just like <code>print_stack()</code> in stack.py.
+        </p>
+        <div class="table-wrap">
+            <table class="steps">
+                <thead><tr><th>#</th><th>Token</th><th>What happened</th><th>Stack (top → bottom)</th><th>Output so far</th></tr></thead>
+                <tbody>
+                {% for st in steps %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><span class="tok">{{ st.token }}</span></td>
+                    <td>{{ st.action }}</td>
+                    <td>
+                        {% if st.stack %}
+                        <span class="nodes">{% for item in st.stack %}<span class="node{{ ' top' if loop.first }}">{{ item }}</span>{% endfor %}<span class="null">None</span></span>
+                        {% else %}<span class="empty">empty</span>{% endif %}
+                    </td>
+                    <td><b>{{ st.output or '—' }}</b></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if eval_steps %}
+    <div class="card" style="margin-top:22px">
+        <h3 style="margin-bottom:6px">Finding the value</h3>
+        <p style="color:var(--muted); font-size:.9rem; margin-bottom:16px">
+            Now the postfix <b>{{ postfix }}</b> is read left to right with the same stack. The <b>top</b> number is the right side of the calculation.
+        </p>
+        <div class="table-wrap">
+            <table class="steps">
+                <thead><tr><th>#</th><th>Token</th><th>What happened</th><th>Stack (top → bottom)</th></tr></thead>
+                <tbody>
+                {% for st in eval_steps %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><span class="tok">{{ st.token }}</span></td>
+                    <td>{{ st.action }}</td>
+                    <td>
+                        {% if st.stack %}
+                        <span class="nodes">{% for item in st.stack %}<span class="node{{ ' top' if loop.first }}">{{ item }}</span>{% endfor %}<span class="null">None</span></span>
+                        {% else %}<span class="empty">empty</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-top:22px">
+        <h3 style="margin-bottom:10px">How it works</h3>
+        <ul class="how">
+            <li><b>Operand</b> (A, B, 5…) → send it straight to the output.</li>
+            <li><b>(</b> → push it onto the stack.</li>
+            <li><b>)</b> → pop to the output until you reach <b>(</b>, then remove the <b>(</b>.</li>
+            <li><b>Operator</b> → pop operators with higher (or equal) precedence first, then push the new one.</li>
+            <li>At the end, pop everything left on the stack to the output.</li>
+            <li><b>Value:</b> if the expression has only numbers, read the postfix left to right. A number is pushed; an operator pops two numbers, calculates, and pushes the answer.</li>
+        </ul>
+        <p style="color:var(--muted); font-size:.88rem; margin-top:12px">
+            Precedence: <b>^</b> (highest, right to left) &gt; <b>* / %</b> &gt; <b>+ -</b>.
+            The stack is built from linked-list <b>Node</b>s (<code>stack.py</code>): <code>push</code> adds a new top node,
+            <code>pop</code> removes it, and <code>peek</code> only looks at it.
+        </p>
+    </div>
+
+    {% include "_worknav.html" %}
+</div>
+{% endblock %}

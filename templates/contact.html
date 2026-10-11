@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+<div class="page-head">
+    <span class="eyebrow">CONTACT</span>
+    <h1>Let's <span class="hl">connect</span></h1>
+    <p>Have a question, an idea, or just want to say hi? My inbox is always open.</p>
+</div>
+
+<div class="contact-layout">
+    <div class="card">
+        <a class="contact-item" href="mailto:{{ me.email }}"><span class="ci">✉️</span><div><small>Email</small><b>{{ me.email }}</b></div></a>
+        <a class="contact-item" href="tel:{{ me.phone|replace(' ', '') }}"><span class="ci">📞</span><div><small>Phone</small><b>{{ me.phone }}</b></div></a>
+        <div class="contact-item"><span class="ci">📍</span><div><small>Location</small><b>{{ me.location }}</b></div></div>
+        <div class="contact-item"><span class="ci">🎓</span><div><small>School</small><b>{{ me.school }}</b></div></div>
+        <div class="socials">
+            {% for label, link, _ in me.socials %}<a class="btn ghost sm" href="{{ link }}" target="_blank" rel="noopener">{{ label }} ↗</a>{% endfor %}
+        </div>
+    </div>
+
+    <div class="card" id="form">
+        <h3 style="margin-bottom:20px;font-size:1.4rem">Send me a message</h3>
+        <form method="post" action="{{ url_for('contact') }}">
+            <div class="row-2">
+                <div class="field"><label for="name">Your name</label><input type="text" id="name" name="name" placeholder="Juan Dela Cruz" required></div>
+                <div class="field"><label for="email">Your email</label><input type="email" id="email" name="email" placeholder="you@example.com" required></div>
+            </div>
+            <div class="field"><label for="message">Message</label><textarea id="message" name="message" placeholder="Write something nice…" required></textarea></div>
+            <button class="btn" type="submit">Send message ✈</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

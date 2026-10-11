@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Linked List{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Data structures</span>
+    <h1>Interactive <span class="hl">Linked List</span></h1>
+    <p>A singly linked list running in Python on the server. Every button below calls a real method of the <code>LinkedList</code> class.</p></div>
+
+<a class="back" href="{{ url_for('index') }}#works">← All works</a>
+<div class="ll-layout">
+    <div class="card ll-controls">
+        <div class="field"><label for="llValue">Value</label><input type="text" id="llValue" placeholder="e.g. Hello" maxlength="30"></div>
+        <div class="field"><label for="llIndex">Index (for “at index” actions)</label><input type="number" id="llIndex" min="0" placeholder="e.g. 1"></div>
+
+        <h3>➕ Insert</h3>
+        <div class="btn-row">
+            <button class="btn sm" data-op="insert_head">At head</button>
+            <button class="btn sm" data-op="insert_tail">At tail</button>
+            <button class="btn sm" data-op="insert_at">At index</button>
+        </div>
+        <h3>🗑 Delete</h3>
+        <div class="btn-row">
+            <button class="btn sm danger" data-op="delete_head">Head</button>
+            <button class="btn sm danger" data-op="delete_tail">Tail</button>
+            <button class="btn sm danger" data-op="delete_at">At index</button>
+            <button class="btn sm danger" data-op="delete_value">By value</button>
+        </div>
+        <h3>🛠 Other</h3>
+        <div class="btn-row">
+            <button class="btn sm ghost" data-op="search">🔍 Search</button>
+            <button class="btn sm ghost" data-op="reverse">⇄ Reverse</button>
+            <button class="btn sm ghost" data-op="clear">Clear all</button>
+        </div>
+    </div>
+
+    <div class="card ll-stage">
+        <div class="ll-meta"><span>Size: <b id="llSize">0</b></span><span>Head → <b id="llHead">—</b></span><span>Tail → <b id="llTail">—</b></span></div>
+        <div class="ll-track" id="llTrack"></div>
+        <div class="ll-log" id="llLog">Ready.</div>
+        <pre class="ll-code">class Node:        value, next
+class LinkedList:  head, size
+    insert_head · insert_tail · insert_at
+    delete_at · delete_value · search · reverse · clear</pre>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/linkedlist.js') }}"></script>{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Area of a Triangle{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Math</span>
+    <h1>Area of a <span class="hl">Triangle</span></h1><p>Choose how you want to calculate it.</p></div>
+<div class="tool">
+    <a class="back" href="{{ url_for('index') }}#works">← All works</a>
+    <div class="card">
+        <div class="shape"><svg viewBox="0 0 150 120"><polygon points="75,8 140,108 10,108" fill="rgba(25,211,218,.15)" stroke="#19d3da" stroke-width="3" stroke-linejoin="round"/>
+            <line x1="75" y1="8" x2="75" y2="108" stroke="#ff5ea8" stroke-width="3" stroke-dasharray="5 4"/>
+            <text x="82" y="62" fill="#ff5ea8" font-size="14" font-weight="700">h</text><text x="108" y="98" fill="#7c5cff" font-size="14" font-weight="700">b</text></svg></div>
+        <div class="tabs" id="tabs">
+            <button type="button" data-mode="bh" class="{{ 'active' if mode == 'bh' }}">Base × Height</button>
+            <button type="button" data-mode="sss" class="{{ 'active' if mode == 'sss' }}">Three Sides</button>
+        </div>
+        {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+        <form action="{{ url_for('atriangle') }}" method="post">
+            <input type="hidden" name="mode" id="modeInput" value="{{ mode }}">
+            <div class="pane {{ 'active' if mode == 'bh' }}" id="pane-bh">
+                <div class="row-2">
+                    <div class="field"><label for="base">Base</label><input type="number" step="any" min="0" id="base" name="base" value="{{ form.get('base','') }}" placeholder="e.g. 10"></div>
+                    <div class="field"><label for="height">Height</label><input type="number" step="any" min="0" id="height" name="height" value="{{ form.get('height','') }}" placeholder="e.g. 6"></div>
+                </div>
+            </div>
+            <div class="pane {{ 'active' if mode == 'sss' }}" id="pane-sss">
+                <div class="row-3">
+                    <div class="field"><label for="side_a">Side a</label><input type="number" step="any" min="0" id="side_a" name="side_a" value="{{ form.get('side_a','') }}" placeholder="3"></div>
+                    <div class="field"><label for="side_b">Side b</label><input type="number" step="any" min="0" id="side_b" name="side_b" value="{{ form.get('side_b','') }}" placeholder="4"></div>
+                    <div class="field"><label for="side_c">Side c</label><input type="number" step="any" min="0" id="side_c" name="side_c" value="{{ form.get('side_c','') }}" placeholder="5"></div>
+                </div>
+            </div>
+            <button class="btn" type="submit">Compute △</button>
+        </form>
+        {% if data %}
+        <div class="result-box"><span class="label">Area of the triangle</span><div class="big">{{ '%.4f'|format(data.area) }}</div>
+            <div class="metrics">
+                <div class="metric"><small>Formula used</small><b style="font-size:1rem">{{ data.formula }}</b></div>
+                {% if data.perimeter %}<div class="metric"><small>Perimeter</small><b>{{ '%.4f'|format(data.perimeter) }}</b></div>{% endif %}
+            </div></div>
+        {% endif %}
+    </div>
+    {% include "_worknav.html" %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('active', x === b));
+    document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + b.dataset.mode));
+    document.getElementById('modeInput').value = b.dataset.mode;
+}));
+</script>
+{% endblock %}

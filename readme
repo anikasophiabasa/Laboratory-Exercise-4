@@ -1,0 +1,47 @@
+Personal Portfolio — Flask
+==========================
+
+1. Install Python 3.9+ if you haven't already.
+2. Open a terminal in this folder.
+3. (Recommended) Create a virtual environment:
+       python -m venv venv
+       venv\Scripts\activate          (Windows)
+       source venv/bin/activate       (macOS / Linux)
+4. Install Flask:
+       pip install -r requirements.txt
+5. Run the app:
+       python app.py
+6. Open http://127.0.0.1:5000 in your browser.
+
+Make it yours
+-------------
+* Edit the PROFILE dictionary at the top of app.py (name, section, course,
+  subject, motto, skills, email, phone, social links …).
+* Drop your photo into static/images/ and name it  profile.jpg
+  — it will automatically replace the initials avatar.
+
+Routes
+------
+/                      Home
+/profile               Profile
+/contact               Contact (with message form)
+/works                 toUpperCase
+/works/area/circle     Area of a circle
+/works/area/triangle   Area of a triangle
+/works/linkedlist      Interactive linked list
+
+
+Contact form: where do messages go?
+-----------------------------------
+* Every message is saved in a file called  messages.jsonl  (next to app.py).
+  Open it any time to read them. Nothing is sent over email by default.
+* To ALSO get each message in your inbox (Gmail):
+    1. Turn on 2-Step Verification in your Google account, then create an
+       "App Password" (Google Account > Security > App passwords).
+    2. Set these before running the app. In PowerShell:
+           $env:MAIL_USER = "you@gmail.com"
+           $env:MAIL_PASS = "your-16-letter-app-password"
+           python app.py
+       (MAIL_TO is optional - use it to send to a different address.)
+  The visitor's email is set as "Reply-To", so you can just hit Reply.
+* Never type your password or app password into app.py or upload it to GitHub.

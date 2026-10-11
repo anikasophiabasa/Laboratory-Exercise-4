@@ -1,0 +1,3 @@
+<div class="work-nav">
+    {% for w in works_list %}<a class="btn ghost sm" href="{{ url_for(w.url) }}">{{ w.icon }} {{ w.title }}</a>{% endfor %}
+</div>

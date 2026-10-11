@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}toUpperCase{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Strings</span>
+    <h1>Convert to <span class="hl">UPPERCASE</span></h1><p>Type anything and watch it get louder.</p></div>
+<div class="tool">
+    <a class="back" href="{{ url_for('index') }}#works">← All works</a>
+    <div class="card">
+        <form action="{{ url_for('works') }}" method="post">
+            <div class="field"><label for="inputString">Enter a string</label>
+                <input type="text" id="inputString" name="inputString" value="{{ text }}" placeholder="hello world" autofocus></div>
+            <button class="btn" type="submit">Convert ✨</button>
+        </form>
+        {% if result is not none %}
+        <div class="result-box"><span class="label">Converted string</span><div class="big">{{ result or '—' }}</div></div>
+        {% endif %}
+    </div>
+    {% include "_worknav.html" %}
+</div>
+{% endblock %}

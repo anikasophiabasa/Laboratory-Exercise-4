@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="page-head">
+    <span class="eyebrow">CHARACTER SHEET</span>
+    <h1>My <span class="hl">Profile</span></h1>
+    <p>Everything about me in one place: my stats, my items and my story so far.</p>
+</div>
+
+<div class="profile-layout">
+    <aside class="card profile-side">
+        <div class="avatar">
+            {% if has_photo %}<img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="{{ me.name }}">
+            {% else %}<span class="initials">{{ me.initials }}</span>{% endif %}
+        </div>
+        <h2>{{ me.name }}</h2>
+        <p class="role">{{ me.roles[0] }}</p>
+        <ul class="info-list">
+            <li><span>Course</span><b>{{ me.course }}</b></li>
+            <li><span>Year</span><b>{{ me.year }}</b></li>
+            <li><span>Section</span><b>{{ me.section }}</b></li>
+            <li><span>Subject</span><b>{{ me.subject }}</b></li>
+            <li><span>School</span><b>{{ me.school }}</b></li>
+        </ul>
+        <div style="margin-top:18px"><a class="btn sm" href="{{ url_for('contact') }}">Contact me</a></div>
+    </aside>
+
+    <div class="profile-main">
+        <div class="motto"><small>FAVORITE MOTTO</small>{{ me.motto }}</div>
+
+        <div class="card">
+            <h3>👋 About me</h3>
+            <p style="color:var(--muted)">{{ me.about }}</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="pixel">STATS</span>⚡ Skills</h3>
+            {% for name, pct in me.skills %}
+            <div class="skill">
+                <span class="name">{{ name }}</span>
+                <span class="blocks">{% for n in range(10) %}<i class="{{ 'on' if n < (pct / 10)|round|int }}"></i>{% endfor %}</span>
+                <span class="pct">{{ pct }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="card">
+            <h3><span class="pixel">INVENTORY</span>🎒 Interests</h3>
+            <div class="inventory">
+                {% for i in me.interests %}
+                {% set parts = i.rsplit(' ', 1) %}
+                <div class="slot"><b>{{ parts[1] }}</b>{{ parts[0] }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="pixel">SAYINGS</span>💬 Favorite sayings</h3>
+            {% for text, who in me.sayings %}
+            <blockquote><p>“{{ text }}”</p><cite>— {{ who }}</cite></blockquote>
+            {% endfor %}
+        </div>
+
+        <div class="card">
+            <h3><span class="pixel">QUEST LOG</span>🛤️ My journey</h3>
+            <div class="quest-log">
+                {% for yr, title, desc in me.timeline %}
+                <div class="quest-item"><span class="pixel yr">{{ yr }}</span><h4>{{ title }}</h4><p>{{ desc }}</p></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

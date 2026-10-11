@@ -1,0 +1,5 @@
+venv/
+.venv/
+__pycache__/
+messages.jsonl
+.DS_Store

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Game Over{% endblock %}
+{% block content %}
+<div class="gameover">
+    <h1>GAME OVER</h1>
+    <p>Oops! That page doesn't exist. Looks like you took a wrong turn.</p>
+    <a class="btn" href="{{ url_for('index') }}">↺ Continue?</a>
+</div>
+{% endblock %}
