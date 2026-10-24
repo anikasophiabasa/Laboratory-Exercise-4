@@ -264,6 +264,7 @@ table.steps td { padding: 10px; border-bottom: 1px solid var(--border); vertical
 
 /* ---------- linked list ---------- */
 .ll-layout { display: grid; grid-template-columns: 340px 1fr; gap: 22px; align-items: start; }
+.ll-layout > * { min-width: 0; }   /* lets the cards shrink on phones instead of stretching the page */
 .ll-controls h3 { font-size: .95rem; margin: 20px 0 10px; color: var(--teal); } .ll-controls h3:first-child { margin-top: 0; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .ll-stage { min-height: 300px; display: flex; flex-direction: column; }
@@ -272,9 +273,9 @@ table.steps td { padding: 10px; border-bottom: 1px solid var(--border); vertical
 .ll-track { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 0; padding: 28px 4px 10px; flex: 1; align-content: center; }
 .ll-node { display: flex; align-items: center; animation: nodeIn .3s ease both; }
 @keyframes nodeIn { from { opacity: 0; transform: translateY(-14px); } }
-.ll-box { position: relative; display: flex; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); background: var(--bg-2); min-width: 90px; }
+.ll-box { position: relative; display: flex; border-radius: 8px; border: 2px solid var(--border); background: var(--bg-2); min-width: 90px; }
 .ll-box .val { padding: 12px 14px; font-weight: 600; text-align: center; flex: 1; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ll-box .ptr { width: 28px; display: grid; place-items: center; background: var(--purple); color: #fff; font-size: .7rem; }
+.ll-box .ptr { border-radius: 0 6px 6px 0; width: 28px; display: grid; place-items: center; background: var(--purple); color: #fff; font-size: .7rem; }
 .ll-box .idx { position: absolute; top: -22px; left: 0; right: 0; text-align: center; font-size: .72rem; color: var(--muted); }
 .ll-box .tagh { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font-size: .66rem; font-weight: 700; color: var(--teal); }
 .ll-node.hl .ll-box { border-color: var(--ok); }
@@ -286,6 +287,22 @@ table.steps td { padding: 10px; border-bottom: 1px solid var(--border); vertical
 .ll-log.ok { border-color: var(--ok); color: var(--ok); } .ll-log.bad { border-color: var(--err); color: var(--err); }
 .ll-code { margin-top: 16px; font: .8rem/1.6 ui-monospace, Consolas, monospace; color: var(--muted); background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; }
 @media (max-width: 960px) { .ll-layout { grid-template-columns: 1fr; } }
+
+/* ---------- queue ---------- */
+.q-doors { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.q-door { padding: 6px 12px; border: 2px dashed var(--border); border-radius: 8px; font-size: .78rem; color: var(--muted); }
+.q-door .pixel { margin-right: 6px; }
+.q-track { gap: 40px 0; padding-top: 30px; padding-bottom: 28px; }
+.q-track .ll-box { min-width: 62px; }
+.q-track .ll-box .val { padding: 10px 10px; max-width: 96px; }
+.q-track .ll-link { width: 24px; }
+.q-door.out .pixel { color: var(--pink); } .q-door.in .pixel { color: var(--teal); }
+.ll-node.new { animation: enterRight .35s ease both; }
+@keyframes enterRight { from { opacity: 0; transform: translateX(70px); } }
+.ll-node.leaving { animation: leave .35s ease forwards; }
+@keyframes leave { to { opacity: 0; transform: translateX(-70px) scale(.8); } }
+.q-tip { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: .86rem; }
+@media (max-width: 640px) { .q-doors { flex-direction: column; align-items: flex-start; } }
 
 /* ---------- footer ---------- */
 footer { padding: 30px 20px 40px; text-align: center; color: var(--muted); font-size: .88rem; border-top: 2px solid var(--border); margin-top: 50px; }

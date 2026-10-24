@@ -1,15 +1,15 @@
 import json
 import math
 import os
-import re
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
-from linkedlist import LinkedList
-from stack import Stack          # linked-list stack made of Nodes (stack.py)
+import linkedlist                # linked list class + button logic (linkedlist.py)
+import queue_dequeue             # queue class + button logic (queue_dequeue.py)
+from infix_postfix import PRECEDENCE, NUMBER_RE, evaluate_postfix, infix_to_postfix   # (infix_postfix.py)
 
 app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
@@ -22,12 +22,13 @@ PROFILE = {
     "name": "Anika Sophia C. Basa",
     "first_name": "Anika",
     "initials": "AB",
-    "intro": "I love solving problems, building things, and finding inspiration in music.",
+    "intro": "I love solving problems, building things, and making music.",
+    "tagline": "Computer Engineering student who loves solving problems, building things, and making music",
     "roles": ["Computer Engineering Student", "Python Developer", "Problem Solver", "Musician & Gamer"],
     "about": (
         "I'm a 2nd year Computer Engineering student at the Polytechnic University of the Philippines. "
         "I love turning tricky problems into clean, working solutions, whether that's a Python program, "
-        "a web page, or a data structure. Outside of code, I'm usually singing, playing an "
+        "a web page, or a data structure. Outside of code, I'm usually singing, dancing, playing an "
         "instrument, or gaming. I believe creativity and logic work best together."
     ),
     # --- player card (home page) ---
@@ -83,6 +84,8 @@ WORKS = [
      "url": "linkedlist_page", "icon": "⛓", "tag": "Data Structures"},
     {"title": "Infix to Postfix", "desc": "Convert an expression to postfix using a stack made of linked-list nodes.",
      "url": "infixtopostfix", "icon": "⇄", "tag": "Data Structures"},
+    {"title": "Queue", "desc": "Enqueue and dequeue in a first-in, first-out line made of linked-list nodes.",
+     "url": "queue_page", "icon": "⇉", "tag": "Data Structures"},
 ]
 
 
@@ -209,153 +212,7 @@ def atriangle():
 
 
 # --------------------------- infix → postfix (stack) ---------------------------
-# The stack is the linked-list Stack from stack.py (every item is a Node).
-PRECEDENCE = {"+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3}
-TOKEN_RE = re.compile(r"\s*(\d+\.\d+|[A-Za-z0-9]+|\S)")
-OPERAND_RE = re.compile(r"\d+\.\d+|[A-Za-z0-9]+")
-NUMBER_RE = re.compile(r"\d+(\.\d+)?")
-
-
-def stack_to_list(stack):
-    """Walk the nodes from top to bottom and return their data as a list."""
-    items = []
-    current = stack.top
-    while current:
-        items.append(current.data)
-        current = current.next
-    return items
-
-
-def infix_to_postfix(expression):
-    """Return (postfix_string, steps). Raises ValueError if the expression is not valid."""
-    if len(expression) > 200:
-        raise ValueError("That expression is too long (200 characters max).")
-    tokens = TOKEN_RE.findall(expression)
-    if not tokens:
-        raise ValueError("Please type an infix expression first, like A+B*C.")
-
-    stack = Stack()
-    output = []
-    steps = []
-    expect_operand = True          # True when the next token must be a value or "("
-
-    def record(token, action):
-        steps.append({"token": token, "action": action,
-                      "stack": stack_to_list(stack), "output": " ".join(output)})
-
-    for tok in tokens:
-        if OPERAND_RE.fullmatch(tok):                      # operand (A, b, 12, 3.5, x1 ...)
-            if not expect_operand:
-                raise ValueError(f"Two values in a row near '{tok}'. Is an operator missing?")
-            output.append(tok)
-            expect_operand = False
-            record(tok, "Operand → goes straight to the output")
-
-        elif tok == "(":
-            if not expect_operand:
-                raise ValueError("An operator is missing before '('.")
-            stack.push(tok)
-            record(tok, "Push '(' onto the stack")
-
-        elif tok == ")":
-            if expect_operand:
-                raise ValueError("Something is missing before ')'.")
-            popped = []
-            while stack.peek() is not None and stack.peek() != "(":
-                item = stack.pop()
-                output.append(item)
-                popped.append(item)
-            if stack.peek() != "(":
-                raise ValueError("Mismatched parentheses: a ')' has no matching '('.")
-            stack.pop()                                    # throw away the "("
-            moved = ", ".join(popped) if popped else "nothing"
-            record(tok, f"Pop {moved} to the output until '(' , then remove '('")
-
-        elif tok in PRECEDENCE:
-            if expect_operand:
-                raise ValueError(f"The operator '{tok}' needs a value before it.")
-            popped = []
-            while True:
-                top = stack.peek()
-                if top is None or top == "(":
-                    break
-                same = PRECEDENCE[top] == PRECEDENCE[tok]
-                # pop higher precedence, or equal precedence (except ^ which goes right-to-left)
-                if PRECEDENCE[top] > PRECEDENCE[tok] or (same and tok != "^"):
-                    item = stack.pop()
-                    output.append(item)
-                    popped.append(item)
-                else:
-                    break
-            stack.push(tok)
-            expect_operand = True
-            action = f"Push '{tok}'"
-            if popped:
-                action = f"Pop {', '.join(popped)} to the output first, then push '{tok}'"
-            record(tok, action)
-
-        else:
-            raise ValueError(f"'{tok}' is not allowed. Use letters, numbers, + - * / % ^ and ( ).")
-
-    if expect_operand:
-        raise ValueError("The expression ends too early. A value is missing at the end.")
-
-    while stack.peek() is not None:                        # empty the stack at the end
-        item = stack.pop()
-        if item == "(":
-            raise ValueError("Mismatched parentheses: a '(' was never closed.")
-        output.append(item)
-        record("end", f"No more tokens → pop '{item}' to the output")
-
-    joiner = "" if all(len(x) == 1 for x in output) else " "
-    return joiner.join(output), steps, output
-
-
-def evaluate_postfix(tokens):
-    """Evaluate postfix tokens with the same linked-list Stack.
-    Returns (value, steps). Only works when every operand is a number."""
-    stack = Stack()
-    steps = []
-
-    def record(token, action):
-        steps.append({"token": token, "action": action, "stack": stack_to_list(stack)})
-
-    def show(n):
-        return f"{n:.10g}" if isinstance(n, float) else str(n)
-
-    for tok in tokens:
-        if NUMBER_RE.fullmatch(tok):
-            stack.push(float(tok) if "." in tok else int(tok))
-            record(tok, f"Number → push {tok}")
-        else:
-            b = stack.pop()                                # the top is the RIGHT side
-            a = stack.pop()
-            try:
-                if tok == "+":
-                    r = a + b
-                elif tok == "-":
-                    r = a - b
-                elif tok == "*":
-                    r = a * b
-                elif tok == "/":
-                    r = a / b
-                elif tok == "%":
-                    r = a % b
-                else:                                      # "^"
-                    if abs(b) > 1000:
-                        raise OverflowError
-                    r = a ** b
-                if isinstance(r, complex) or abs(r) > 1e300:
-                    raise OverflowError
-            except ZeroDivisionError:
-                raise ValueError("Can't divide by zero, so this expression has no value.")
-            except OverflowError:
-                raise ValueError("That calculation is too big (or not a real number), so there is no value.")
-            stack.push(r)
-            record(tok, f"Pop {show(b)} and {show(a)}, calculate {show(a)} {tok} {show(b)} = {show(r)}, push {show(r)}")
-    return stack.pop(), steps
-
-
+# The conversion code (infix_to_postfix, evaluate_postfix) lives in infix_postfix.py
 @app.route("/works/infixtopostfix", methods=["GET", "POST"])
 def infixtopostfix():
     expression, postfix, steps, error = "", None, [], None
@@ -380,14 +237,8 @@ def infixtopostfix():
 
 
 # ------------------------------ linked list ------------------------------
-ll = LinkedList()
-for v in ("Flask", "Python", "Portfolio"):
-    ll.insert_tail(v)
-
-
-def _snapshot(message, highlight=None, ok=True):
-    return jsonify({"ok": ok, "message": message, "nodes": ll.to_list(),
-                    "size": ll.size, "highlight": highlight})
+# The LinkedList class and the code that runs each button live in linkedlist.py
+ll = linkedlist.create_demo_list()
 
 
 @app.route("/works/linkedlist")
@@ -397,51 +248,34 @@ def linkedlist_page():
 
 @app.route("/api/linkedlist", methods=["GET"])
 def ll_state():
-    return _snapshot("Linked list loaded.")
+    return jsonify(linkedlist.snapshot(ll, "Linked list loaded."))
 
 
 @app.route("/api/linkedlist/<op>", methods=["POST"])
 def ll_op(op):
     body = request.get_json(silent=True) or {}
-    value = str(body.get("value", "")).strip()
-    raw_index = body.get("index", "")
-    try:
-        needs_value = {"insert_head", "insert_tail", "insert_at", "delete_value", "search"}
-        if op in needs_value and not value:
-            raise ValueError("Please enter a value.")
-        if op in {"insert_at", "delete_at"}:
-            try:
-                index = int(raw_index)
-            except (TypeError, ValueError):
-                raise ValueError("Please enter a whole number for the index.")
+    return jsonify(linkedlist.run_operation(ll, op, body.get("value", ""), body.get("index", "")))
 
-        if op == "insert_head":
-            i = ll.insert_head(value); return _snapshot(f'Inserted "{value}" at the head.', i)
-        if op == "insert_tail":
-            i = ll.insert_tail(value); return _snapshot(f'Inserted "{value}" at the tail.', i)
-        if op == "insert_at":
-            i = ll.insert_at(index, value); return _snapshot(f'Inserted "{value}" at index {i}.', i)
-        if op == "delete_head":
-            v = ll.delete_at(0); return _snapshot(f'Deleted head node "{v}".')
-        if op == "delete_tail":
-            v = ll.delete_at(ll.size - 1) if ll.size else ll.delete_at(0)
-            return _snapshot(f'Deleted tail node "{v}".')
-        if op == "delete_at":
-            v = ll.delete_at(index); return _snapshot(f'Deleted "{v}" at index {index}.')
-        if op == "delete_value":
-            i = ll.delete_value(value); return _snapshot(f'Deleted "{value}" (was at index {i}).')
-        if op == "search":
-            i = ll.search(value)
-            if i == -1:
-                return _snapshot(f'"{value}" was not found.', None, ok=False)
-            return _snapshot(f'Found "{value}" at index {i}.', i)
-        if op == "reverse":
-            ll.reverse(); return _snapshot("List reversed.")
-        if op == "clear":
-            ll.clear(); return _snapshot("List cleared.")
-        return _snapshot("Unknown operation.", None, ok=False)
-    except (ValueError, IndexError) as e:
-        return _snapshot(str(e), None, ok=False)
+
+# ------------------------------ queue ------------------------------
+# The Queue class (enqueue / dequeue) and the code that runs each button live in queue_dequeue.py
+q = queue_dequeue.create_demo_queue()
+
+
+@app.route("/works/queue")
+def queue_page():
+    return render_template("queue.html")
+
+
+@app.route("/api/queue", methods=["GET"])
+def queue_state():
+    return jsonify(queue_dequeue.snapshot(q, "Queue loaded."))
+
+
+@app.route("/api/queue/<op>", methods=["POST"])
+def queue_op(op):
+    body = request.get_json(silent=True) or {}
+    return jsonify(queue_dequeue.run_operation(q, op, body.get("value", "")))
 
 
 if __name__ == "__main__":

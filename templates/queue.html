@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Queue{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Data structures</span>
+    <h1>Queue: <span class="hl">Enqueue &amp; Dequeue</span></h1>
+    <p>A queue is a line: the first one in is the first one out (FIFO). This one is made of linked-list nodes and runs in Python on the server. Every button calls a real method of the <code>Queue</code> class.</p></div>
+
+<a class="back" href="{{ url_for('index') }}#works">← All works</a>
+<div class="ll-layout">
+    <div class="card ll-controls">
+        <div class="field"><label for="qValue">Value</label><input type="text" id="qValue" placeholder="e.g. Job 4" maxlength="20" autocomplete="off"></div>
+
+        <h3>➕ Enqueue</h3>
+        <div class="btn-row"><button class="btn sm" data-op="enqueue">Enqueue (add at rear)</button></div>
+        <h3>➖ Dequeue</h3>
+        <div class="btn-row"><button class="btn sm danger" data-op="dequeue">Dequeue (remove from front)</button></div>
+        <h3>🛠 Other</h3>
+        <div class="btn-row">
+            <button class="btn sm ghost" data-op="peek">👀 Peek</button>
+            <button class="btn sm ghost" data-op="clear">Clear all</button>
+        </div>
+
+        <p class="q-tip">Real-life example: a line at the cashier or a printer. The one who arrived first is served first.</p>
+    </div>
+
+    <div class="card ll-stage">
+        <div class="ll-meta">
+            <span>Size: <b id="qSize">0</b></span>
+            <span>Front → <b id="qFront">—</b></span>
+            <span>Rear → <b id="qRear">—</b></span>
+            <span>Empty? <b id="qEmpty">—</b></span>
+        </div>
+        <div class="q-doors">
+            <div class="q-door out"><span class="pixel">DEQUEUE</span>← OUT (front)</div>
+            <div class="q-door in"><span class="pixel">ENQUEUE</span>IN (rear) ←</div>
+        </div>
+        <div class="ll-track q-track" id="qTrack"></div>
+        <div class="ll-log" id="qLog">Ready.</div>
+        <pre class="ll-code">class Node:   value, next
+class Queue:  front, rear, size
+    enqueue (add at rear) · dequeue (remove from front)
+    peek · is_empty · clear</pre>
+    </div>
+</div>
+
+{% include "_worknav.html" %}
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/queue.js') }}"></script>{% endblock %}

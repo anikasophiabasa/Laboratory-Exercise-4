@@ -20,7 +20,7 @@
             <li><a class="link {{ 'active' if request.endpoint == 'index' }}" href="{{ url_for('index') }}">Home</a></li>
             <li><a class="link {{ 'active' if request.endpoint == 'profile' }}" href="{{ url_for('profile') }}">Profile</a></li>
             <li class="has-dd">
-                <a class="link {{ 'active' if request.endpoint in ['works','acircle','atriangle','linkedlist_page','infixtopostfix'] }}" href="{{ url_for('works') }}">Works ▾</a>
+                <a class="link {{ 'active' if request.endpoint in ['works','acircle','atriangle','linkedlist_page','infixtopostfix','queue_page'] }}" href="{{ url_for('works') }}">Works ▾</a>
                 <ul class="dropdown">
                     {% for w in works_list %}
                     <li><a href="{{ url_for(w.url) }}"><span class="ico">{{ w.icon }}</span>{{ w.title }}</a></li>

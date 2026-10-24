@@ -1,4 +1,6 @@
-"""A simple singly linked list used by the /works/linkedlist page."""
+"""A simple singly linked list used by the /works/linkedlist page.
+
+The LinkedList class is at the top. The functions at the bottom run the buttons on the page."""
 
 
 class Node:
@@ -96,3 +98,62 @@ class LinkedList:
             out.append(cur.value)
             cur = cur.next
         return out
+
+
+# =====================================================================
+#  Used by the web page (app.py calls these)
+# =====================================================================
+def create_demo_list():
+    """The list that is shown when the page first opens."""
+    ll = LinkedList()
+    for v in ("Flask", "Python", "Portfolio"):
+        ll.insert_tail(v)
+    return ll
+
+
+def snapshot(ll, message, highlight=None, ok=True):
+    """Everything the page needs to redraw the list."""
+    return {"ok": ok, "message": message, "nodes": ll.to_list(),
+            "size": ll.size, "highlight": highlight}
+
+
+def run_operation(ll, op, raw_value="", raw_index=""):
+    """Run one button (op) on the list and return a snapshot for the page."""
+    value = str(raw_value).strip()
+    try:
+        needs_value = {"insert_head", "insert_tail", "insert_at", "delete_value", "search"}
+        if op in needs_value and not value:
+            raise ValueError("Please enter a value.")
+        if op in {"insert_at", "delete_at"}:
+            try:
+                index = int(raw_index)
+            except (TypeError, ValueError):
+                raise ValueError("Please enter a whole number for the index.")
+
+        if op == "insert_head":
+            i = ll.insert_head(value); return snapshot(ll, f'Inserted "{value}" at the head.', i)
+        if op == "insert_tail":
+            i = ll.insert_tail(value); return snapshot(ll, f'Inserted "{value}" at the tail.', i)
+        if op == "insert_at":
+            i = ll.insert_at(index, value); return snapshot(ll, f'Inserted "{value}" at index {i}.', i)
+        if op == "delete_head":
+            v = ll.delete_at(0); return snapshot(ll, f'Deleted head node "{v}".')
+        if op == "delete_tail":
+            v = ll.delete_at(ll.size - 1) if ll.size else ll.delete_at(0)
+            return snapshot(ll, f'Deleted tail node "{v}".')
+        if op == "delete_at":
+            v = ll.delete_at(index); return snapshot(ll, f'Deleted "{v}" at index {index}.')
+        if op == "delete_value":
+            i = ll.delete_value(value); return snapshot(ll, f'Deleted "{value}" (was at index {i}).')
+        if op == "search":
+            i = ll.search(value)
+            if i == -1:
+                return snapshot(ll, f'"{value}" was not found.', None, ok=False)
+            return snapshot(ll, f'Found "{value}" at index {i}.', i)
+        if op == "reverse":
+            ll.reverse(); return snapshot(ll, "List reversed.")
+        if op == "clear":
+            ll.clear(); return snapshot(ll, "List cleared.")
+        return snapshot(ll, "Unknown operation.", None, ok=False)
+    except (ValueError, IndexError) as e:
+        return snapshot(ll, str(e), None, ok=False)
