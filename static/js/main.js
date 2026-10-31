@@ -2,8 +2,19 @@
 const burger = document.getElementById('burger');
 const links = document.getElementById('navLinks');
 burger.addEventListener('click', () => links.classList.toggle('open'));
-links.addEventListener('click', e => { if (e.target.matches('a')) links.classList.remove('open'); });
-
+const worksLink = document.querySelector('.has-dd > a');
+const isNarrow = () => window.matchMedia('(max-width: 820px)').matches;
+if (worksLink) {
+  worksLink.addEventListener('click', e => {
+    if (isNarrow()) {
+      e.preventDefault();
+      worksLink.parentElement.classList.toggle('open');
+    }
+  });
+}
+links.addEventListener('click', e => {
+  if (e.target.matches('a') && !(e.target === worksLink && isNarrow())) links.classList.remove('open');
+});
 // glow that follows the mouse
 const glow = document.getElementById('glow');
 window.addEventListener('pointermove', e => {

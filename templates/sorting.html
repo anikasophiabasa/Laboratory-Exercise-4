@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Sorting{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Algorithms</span>
+    <h1>Sorting <span class="hl">Algorithms</span></h1>
+    <p>Type some numbers, pick an algorithm from the lesson, and watch it sort them one step at a time. It runs in Python on the server (<code>sorting.py</code>).</p></div>
+
+<a class="back" href="{{ url_for('index') }}#works">← All works</a>
+<div class="ll-layout">
+    <div class="card ll-controls">
+        <div class="field"><label for="sValues">Numbers (separated by commas)</label>
+            <input type="text" id="sValues" value="4, 3, 7, 1, 5" autocomplete="off" placeholder="e.g. 4, 3, 7, 1, 5"></div>
+        <div class="btn-row">
+            <button class="btn sm ghost" type="button" data-example="4, 3, 7, 1, 5">Lesson list</button>
+            <button class="btn sm ghost" type="button" data-example="35, 22, 90, 4, 50, 20, 30, 40, 1">Merge sort list</button>
+            <button class="btn sm ghost" type="button" id="randomBtn">🎲 Random</button>
+        </div>
+
+        <h3>Algorithm</h3>
+        <div class="algo-btns" id="algoBtns">
+            {% for key, a in algorithms.items() %}
+            <button type="button" class="algo-btn{{ ' active' if loop.first }}" data-algo="{{ key }}">{{ a.name }}</button>
+            {% endfor %}
+        </div>
+
+        <h3>Order</h3>
+        <div class="seg" id="orderBtns">
+            <button type="button" class="active" data-order="asc">Ascending ↑</button>
+            <button type="button" data-order="desc">Descending ↓</button>
+        </div>
+
+        <div class="btn-row" style="margin-top:22px">
+            <button class="btn" type="button" id="sortBtn">▶ Sort it!</button>
+            <button class="btn sm ghost" type="button" id="compareBtn">Compare all 5</button>
+        </div>
+        <p class="q-tip">Use {{ max_values }} numbers or fewer. Decimals and negative numbers work too.</p>
+    </div>
+
+    <div class="card ll-stage">
+        <div class="s-stats">
+            <span class="s-stat">Algorithm: <b id="sName">Bubble Sort</b></span>
+            <span class="s-stat">Comparisons: <b id="sCmp">0</b></span>
+            <span class="s-stat">Swaps / moves: <b id="sSwp">0</b></span>
+            <span class="s-stat">Step: <b id="sStep">0 / 0</b></span>
+        </div>
+        <div class="s-boxes" id="sBoxes"></div>
+        <div class="s-progress"><i id="sBar"></i></div>
+        <div class="ll-log" id="sNote">Press “Sort it!” to start.</div>
+
+        <div class="s-ctrl">
+            <button class="btn sm ghost" type="button" id="firstBtn" title="Back to the start">⏮</button>
+            <button class="btn sm ghost" type="button" id="prevBtn">◀ Prev</button>
+            <button class="btn sm" type="button" id="playBtn">▶ Play</button>
+            <button class="btn sm ghost" type="button" id="nextBtn">Next ▶</button>
+            <label class="s-speed">Speed <input type="range" id="speed" min="1" max="5" value="3"></label>
+        </div>
+        <div class="s-legend">
+            <span><i class="k cmp"></i>comparing</span><span><i class="k swp"></i>swapped / written</span>
+            <span><i class="k piv"></i>pivot / lowest</span><span><i class="k done"></i>sorted</span>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:22px">
+    {% for key, a in algorithms.items() %}
+    <div class="algo-info" data-algo="{{ key }}"{{ '' if loop.first else ' hidden' }}>
+        <h3 style="margin-bottom:8px">{{ a.name }}</h3>
+        <p style="color:var(--muted)">{{ a.definition }}</p>
+        <div class="info-grid">
+            <div><span class="pixel hl">BEST USED WHEN</span><ul class="how">{% for b in a.best_for %}<li>{{ b }}</li>{% endfor %}</ul></div>
+            <div><span class="pixel hl">HOW IT WORKS</span><p class="how-text">{{ a.how }}</p></div>
+            <div><span class="pixel hl">COMPLEXITY</span>
+                <div class="chips">
+                    <span class="chip">Best <b>{{ a.best }}</b></span><span class="chip">Average <b>{{ a.avg }}</b></span>
+                    <span class="chip">Worst <b>{{ a.worst }}</b></span><span class="chip">Space <b>{{ a.space }}</b></span>
+                    <span class="chip">Stable <b>{{ a.stable }}</b></span>
+                </div></div>
+        </div>
+        <span class="pixel hl">THE CODE (sorting.py)</span>
+        <pre class="ll-code">{{ a.code }}</pre>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card" id="cmpCard" style="margin-top:22px" hidden>
+    <h3 style="margin-bottom:6px">Compare all 5 on your numbers</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:14px" id="cmpIntro"></p>
+    <div class="table-wrap">
+        <table class="steps cmp-table">
+            <thead><tr><th>Algorithm</th><th>Comparisons</th><th>Swaps / moves</th><th>Result</th></tr></thead>
+            <tbody id="cmpBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card" style="margin-top:22px">
+    <h3 style="margin-bottom:6px">Time and space complexity</h3>
+    <div class="table-wrap">
+        <table class="steps">
+            <thead><tr><th>Algorithm</th><th>Best case</th><th>Average case</th><th>Worst case</th><th>Space</th><th>Stable?</th></tr></thead>
+            <tbody>
+            {% for key, a in algorithms.items() %}
+            <tr><td><b>{{ a.name }}</b></td><td>{{ a.best }}</td><td>{{ a.avg }}</td><td>{{ a.worst }}</td><td>{{ a.space }}</td><td>{{ a.stable }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <ul class="how" style="margin-top:14px">
+        {% for k, d in big_o %}<li><b>{{ k }}</b> – {{ d }}</li>{% endfor %}
+    </ul>
+</div>
+
+<div class="card" style="margin-top:22px">
+    <h3 style="margin-bottom:6px">Which sorting algorithm is the best?</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:12px">It depends on what you need:</p>
+    <ul class="how">
+        {% for k, d in guide %}<li><b>{{ k }}:</b> {{ d }}</li>{% endfor %}
+    </ul>
+</div>
+
+{% include "_worknav.html" %}
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/sorting.js') }}"></script>{% endblock %}
