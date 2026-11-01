@@ -7,8 +7,9 @@ from email.message import EmailMessage
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
-import linkedlist                # linked list class + button logic (linkedlist.py)
-import queue_dequeue             # queue class + button logic (queue_dequeue.py)
+import linkedlist                
+import queue_dequeue             
+import sorting   
 from infix_postfix import PRECEDENCE, NUMBER_RE, evaluate_postfix, infix_to_postfix   # (infix_postfix.py)
 
 app = Flask(__name__)
@@ -86,8 +87,9 @@ WORKS = [
      "url": "infixtopostfix", "icon": "⇄", "tag": "Data Structures"},
     {"title": "Queue", "desc": "Enqueue and dequeue in a first-in, first-out line made of linked-list nodes.",
      "url": "queue_page", "icon": "⇉", "tag": "Data Structures"},
+    {"title": "Sorting", "desc": "Watch bubble, selection, insertion, merge and quick sort work step by step.",
+     "url": "sorting_page", "icon": "⇅", "tag": "Algorithms"},
 ]
-
 
 @app.context_processor
 def inject_globals():
@@ -277,6 +279,24 @@ def queue_op(op):
     body = request.get_json(silent=True) or {}
     return jsonify(queue_dequeue.run_operation(q, op, body.get("value", "")))
 
+# ------------------------------ sorting ------------------------------
+# The algorithms, the step-by-step tracers and the info texts live in sorting.py
+@app.route("/works/sorting")
+def sorting_page():
+    return render_template("sorting.html", algorithms=sorting.ALGORITHMS, guide=sorting.GUIDE, big_o=sorting.BIG_O_KEY,
+                           max_values=sorting.MAX_VALUES)
+
+
+@app.route("/api/sorting", methods=["POST"])
+def sorting_run():
+    body = request.get_json(silent=True) or {}
+    return jsonify(sorting.run(body.get("algorithm", ""), body.get("values", ""), body.get("order", "asc")))
+
+
+@app.route("/api/sorting/compare", methods=["POST"])
+def sorting_compare():
+    body = request.get_json(silent=True) or {}
+    return jsonify(sorting.compare_all(body.get("values", ""), body.get("order", "asc")))
 
 if __name__ == "__main__":
     app.run(debug=True)
