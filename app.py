@@ -308,7 +308,7 @@ bt = binary_tree.create_demo_tree()
 
 @app.route("/works/binarytree")
 def binarytree_page():
-    return render_template("binarytree.html", max_nodes=binary_tree.MAX_NODES, code=binary_tree.CODE)
+        return render_template("binarytree.html", max_nodes=binary_tree.MAX_NODES)
 
 
 @app.route("/api/binarytree", methods=["GET"])

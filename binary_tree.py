@@ -1,5 +1,4 @@
 """A binary tree for the /works/binarytree page (from the Trees lesson)."""
-import inspect
 from collections import deque
 
 
@@ -99,8 +98,6 @@ class BinaryTree:
             parent.left = None
         return root
 
-
-CODE = inspect.getsource(BinaryTree)   # shown at the bottom of the page
 
 # =====================================================================
 #  Used by the web page (app.py calls these)
