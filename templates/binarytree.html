@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Binary Tree{% endblock %}
+{% block content %}
+<div class="page-head"><span class="eyebrow">QUEST · Data structures</span>
+    <h1>Binary <span class="hl">Tree</span></h1>
+    <p>Build a tree with <code>insert_left</code> and <code>insert_right</code>, then walk it with preorder, inorder and postorder traversal. Search and delete work too. It runs in Python on the server (<code>binary_tree.py</code>).</p></div>
+
+<a class="back" href="{{ url_for('index') }}#works">← All works</a>
+<div class="ll-layout">
+    <div class="card ll-controls">
+        <div class="bt-input-row">
+            <div class="field"><label for="btValue">Value</label><input type="text" id="btValue" placeholder="e.g. H" maxlength="8" autocomplete="off"></div>
+            <div class="field"><label for="btParent">Parent value</label><input type="text" id="btParent" placeholder="click a node" maxlength="8" autocomplete="off"></div>
+        </div>
+
+        <h3>➕ Insert</h3>
+        <div class="btn-row">
+            <button class="btn sm" data-op="insert_left">Left child</button>
+            <button class="btn sm" data-op="insert_right">Right child</button>
+            <button class="btn sm ghost" data-op="set_root">Set root</button>
+        </div>
+        <h3>🚶 Traverse</h3>
+        <div class="btn-row">
+            <button class="btn sm" data-trav="preorder">Preorder</button>
+            <button class="btn sm" data-trav="inorder">Inorder</button>
+            <button class="btn sm" data-trav="postorder">Postorder</button>
+        </div>
+        <h3>🔍 Search &amp; 🗑 Delete</h3>
+        <div class="btn-row">
+            <button class="btn sm ghost" data-op="search">Search value</button>
+            <button class="btn sm danger" data-op="delete">Delete value</button>
+        </div>
+        <h3>🛠 Other</h3>
+        <div class="btn-row">
+            <button class="btn sm ghost" data-op="reset">Reset to lesson tree</button>
+            <button class="btn sm ghost" data-op="clear">Clear all</button>
+        </div>
+        <p class="q-tip">Tip: click a node to fill in the parent. Use up to {{ max_nodes }} nodes, each with a different value.</p>
+    </div>
+
+    <div class="card ll-stage">
+        <div class="ll-meta"><span>Nodes: <b id="btSize">0</b></span><span>Height: <b id="btHeight">0</b></span><span>Root → <b id="btRoot">—</b></span></div>
+        <div class="bt-stage"><svg class="bt-svg" id="btSvg" role="img" aria-label="Binary tree drawing"></svg></div>
+        <div class="bt-output" id="btOutput">Press a traversal button to see the order the nodes are visited.</div>
+        <div class="ll-log" id="btLog">Ready.</div>
+        <pre class="ll-code">class Node:        value, left, right
+class BinaryTree:  root
+    insert_left · insert_right
+    preorder_traversal · inorder_traversal · postorder_traversal
+    search · delete_node</pre>
+    </div>
+</div>
+
+<div class="card" style="margin-top:22px">
+    <h3 style="margin-bottom:6px">Traversal orders</h3>
+    <div class="table-wrap">
+        <table class="steps">
+            <thead><tr><th>Traversal</th><th>Order</th><th>Used for</th></tr></thead>
+            <tbody>
+                <tr><td><b>Preorder</b></td><td>Root, Left, Right</td><td>Copying a folder hierarchy: create the parent folder first, then its contents.</td></tr>
+                <tr><td><b>Inorder</b></td><td>Left, Root, Right</td><td>Listing records in sorted order (in a binary search tree).</td></tr>
+                <tr><td><b>Postorder</b></td><td>Left, Right, Root</td><td>Deleting a folder hierarchy: delete the contents before the parent folder.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card" style="margin-top:22px">
+    <h3 style="margin-bottom:6px">The code (binary_tree.py)</h3>
+    <pre class="ll-code">{{ code }}</pre>
+</div>
+
+{% include "_worknav.html" %}
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/binarytree.js') }}"></script>{% endblock %}

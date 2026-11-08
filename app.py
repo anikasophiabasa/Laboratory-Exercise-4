@@ -10,6 +10,7 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, url
 import linkedlist                
 import queue_dequeue             
 import sorting   
+import binary_tree
 from infix_postfix import PRECEDENCE, NUMBER_RE, evaluate_postfix, infix_to_postfix   # (infix_postfix.py)
 
 app = Flask(__name__)
@@ -89,6 +90,8 @@ WORKS = [
      "url": "queue_page", "icon": "⇉", "tag": "Data Structures"},
     {"title": "Sorting", "desc": "Watch bubble, selection, insertion, merge and quick sort work step by step.",
      "url": "sorting_page", "icon": "⇅", "tag": "Algorithms"},
+    {"title": "Binary Tree", "desc": "Build a binary tree, then traverse, search and delete nodes.",
+     "url": "binarytree_page", "icon": "🌳", "tag": "Data Structures"},
 ]
 
 @app.context_processor
@@ -297,6 +300,26 @@ def sorting_run():
 def sorting_compare():
     body = request.get_json(silent=True) or {}
     return jsonify(sorting.compare_all(body.get("values", ""), body.get("order", "asc")))
+
+# ------------------------------ binary tree ------------------------------
+# The Node / BinaryTree classes and the code that runs each button live in binary_tree.py
+bt = binary_tree.create_demo_tree()
+
+
+@app.route("/works/binarytree")
+def binarytree_page():
+    return render_template("binarytree.html", max_nodes=binary_tree.MAX_NODES, code=binary_tree.CODE)
+
+
+@app.route("/api/binarytree", methods=["GET"])
+def bt_state():
+    return jsonify(binary_tree.snapshot(bt, "Binary tree loaded."))
+
+
+@app.route("/api/binarytree/<op>", methods=["POST"])
+def bt_op(op):
+    body = request.get_json(silent=True) or {}
+    return jsonify(binary_tree.run_operation(bt, op, body.get("value", ""), body.get("parent", "")))
 
 if __name__ == "__main__":
     app.run(debug=True)
